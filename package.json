@@ -1,0 +1,24 @@
+{
+  "name": "mocha-explorer-launcher-test",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Sample workspace for testing a custom Mocha Test Explorer launcher script that delegates to a runTests file via @vscode/test-electron",
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -p . -w",
+    "pretest": "npm run build",
+    "test": "node ./out/runTests.js",
+    "lint": "echo 'No lint setup'"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.84.0",
+    "@vscode/test-electron": "^2.5.2",
+    "typescript": "^5.3.3",
+    "mocha": "^10.2.0",
+    "ts-node": "^10.9.1",
+    "source-map-support": "^0.5.13"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,38 @@
+{
+  // See https://code.visualstudio.com/docs/editor/debugging for more details about
+  // how to configure or disable launch configurations.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run extension tests (custom launcher)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/customLauncher.js",
+      "args": [
+        // Mocha Test Explorer will normally pass WorkerArgs here. For manual
+        // debugging we provide an empty JSON object so the launcher can
+        // proceed. Adjust this to simulate different launch scenarios.
+        "{}"
+      ],
+      "env": {
+        // Compile and point to the built runTests script. During debugging
+        // you can change this to point at the TypeScript source if using ts-node.
+        "RUN_TESTS_FILE": "out/runTests.js",
+        "VSCODE_VERSION": "stable"
+      },
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "preLaunchTask": "npm: build",
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Run compiled runTests directly",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/runTests.js",
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "cwd": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}
