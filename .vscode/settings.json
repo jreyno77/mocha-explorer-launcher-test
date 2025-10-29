@@ -1,24 +1,14 @@
 {
-  // Use the compiled custom launcher whenever Mocha Test Explorer runs tests.
   "mochaExplorer.launcherScript": "out/customLauncher.js",
-  // By default, Mocha Test Explorer will look for .js test files under
-  // `out/test`. Since our tests are written in TypeScript and compiled to
-  // JavaScript, the compiled location is watched.
   "mochaExplorer.files": "out/test/**/*.js",
-  // Tell Mocha Test Explorer to watch for changes to the compiled tests.
   "mochaExplorer.watch": "out/**/*.js",
-  // Environment variables passed to the custom launcher. This is where
-  // you specify which compiled runTests file the launcher should call and
-  // which VS Code version to download for tests. If you change the output
-  // directory or want to test against Insiders, adjust these values.
   "mochaExplorer.env": {
     "RUN_TESTS_FILE": "out/runTests.js",
-    "VSCODE_VERSION": "stable"
+    "VSCODE_VERSION": "stable",
+    "VSCODE_EXECUTABLE_PATH": "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
+    "INSPECT_EXTENSIONS_PORT": "9229"
   },
-  // Disable autoload so tests are only loaded when commanded. This avoids
-  // triggering the default worker which isn't used with a custom launcher.
+  "mochaExplorer.logpanel": true,
   "mochaExplorer.autoload": false,
-  // Use a server role for the IPC channel. Mocha Test Explorer will start
-  // the worker as a client connecting back to the launcher.
   "mochaExplorer.ipcRole": "server"
 }

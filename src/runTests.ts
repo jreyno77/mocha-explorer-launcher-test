@@ -1,6 +1,7 @@
 import * as path from 'path';
 import Mocha from 'mocha';
-import * as glob from 'glob';
+import glob from 'glob';
+import 'source-map-support/register';
 
 /**
  * This function is the entry point for the VS Code integration test runner.
@@ -15,7 +16,7 @@ export function run(): Promise<void> {
   const mocha = new Mocha({
     ui: 'bdd',
     color: true,
-    timeout: 30000,
+    timeout: process.env.INSPECT_EXTENSIONS_PORT ? 0 : 30000, // no timeouts while debugging
   });
 
   // Determine the location of compiled tests. By default we assume that
@@ -26,19 +27,21 @@ export function run(): Promise<void> {
 
   return new Promise((resolve, reject) => {
     glob('**/*.test.js', { cwd: testsRoot }, (err, files) => {
-      if (err) {
-        return reject(err);
-      }
+      if (err) return reject(err);
       // Load each discovered test file into Mocha
+      console.log('[runTests] loading test files:', files);
       files.forEach((file) => mocha.addFile(path.resolve(testsRoot, file)));
       try {
         // Run the tests. resolve or reject the promise based on failures
-        mocha.run((failures) => {
+        const runner = mocha.run(failures => {
           if (failures > 0) {
-            reject(new Error(`${failures} tests failed.`));
+            reject(new Error(`${failures} test(s) failed.`));
           } else {
             resolve();
           }
+        });
+        runner.on('fail', (test, error) => {
+          console.error('[runTests] FAIL:', test.fullTitle(), error);
         });
       } catch (err) {
         reject(err);

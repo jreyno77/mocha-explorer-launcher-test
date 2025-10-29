@@ -16,24 +16,46 @@
         // Port the Extension Host will listen on so we can attach:
         "INSPECT_EXTENSIONS_PORT": "9229"
       },
-      "skipFiles": ["<node_internals>/**"]
+      "skipFiles": ["<node_internals>/**"],
+      "trace": true
     },
     {
-      "name": "2) Attach: VS Code Extension Host",
-      "type": "node",
-      "request": "attach",
-      "port": 9229,
-      "restart": true,
-      "timeout": 30000,
-      "protocol": "inspector",
-      "skipFiles": [
-        "<node_internals>/**",
-        "**/node_modules/**"
-      ],
-      "sourceMaps": true,
-      "outFiles": [
-        "${workspaceFolder}/out/**/*.js"
-      ]
-    }
-  ]
+  "name": "2) Attach: VS Code Extension Host",
+  "type": "pwa-node",
+  "request": "attach",
+  "address": "127.0.0.1",
+  "port": 9229,                      // must match INSPECT_EXTENSIONS_PORT
+  "protocol": "inspector",
+  "timeout": 30000,
+  "restart": true,
+
+  "sourceMaps": true,
+  "outFiles": ["${workspaceFolder}/out/**/*.js"],
+  "resolveSourceMapLocations": [
+    "${workspaceFolder}/**",
+    "!**/node_modules/**"
+  ],
+  "sourceMapPathOverrides": {
+    "*": "*",
+    "${workspaceFolder}/out/*": "${workspaceFolder}/out/*",
+    "${workspaceFolder}/src/*": "${workspaceFolder}/src/*"
+  },
+  "skipFiles": [
+    "<node_internals>/**",
+    "**/node_modules/**"
+  ],
+  "trace": true
+}
+
+  ],
+  "compounds": [
+  {
+    "name": "Debug: Launcher + Extension Host",
+    "configurations": [
+      "1) Debug Custom Launcher",
+      "2) Attach: VS Code Extension Host"
+    ],
+    "stopAll": true
+  }
+]
 }

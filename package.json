@@ -1,24 +1,30 @@
 {
   "name": "mocha-explorer-launcher-test",
+  "displayName": "Mocha Explorer Launcher Test",
   "version": "0.1.0",
-  "private": true,
-  "description": "Sample workspace for testing a custom Mocha Test Explorer launcher script that delegates to a runTests file via @vscode/test-electron",
+  "main": "./out/extension.js",
+  "engines": {
+    "vscode": "^1.32.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
   "scripts": {
-    "build": "tsc -p .",
-    "watch": "tsc -p . -w",
+    "build": "rm -rf out && tsc -p .",
+    "watch": "tsc -w -p .",
     "pretest": "npm run build",
-    "test": "node ./out/runTests.js",
-    "lint": "echo 'No lint setup'"
+    "test": "VSCODE_EXECUTABLE_PATH=\"/Applications/Visual Studio Code.app/Contents/MacOS/Electron\" INSPECT_EXTENSIONS_PORT=9229 node ./out/customLauncher.js \"{}\""
   },
   "devDependencies": {
+    "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.0",
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.84.0",
     "@vscode/test-electron": "^2.5.2",
-    "typescript": "^5.3.3",
     "mocha": "^10.2.0",
+    "source-map-support": "^0.5.13",
     "ts-node": "^10.9.1",
-    "source-map-support": "^0.5.13"
-  },
-  "dependencies": {}
+    "typescript": "^5.3.3",
+    "vscode-test-adapter-remoting-util": "^0.13.0"
+  }
 }
