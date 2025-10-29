@@ -1,38 +1,39 @@
 {
-  // See https://code.visualstudio.com/docs/editor/debugging for more details about
-  // how to configure or disable launch configurations.
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run extension tests (custom launcher)",
+      "name": "1) Debug Custom Launcher",
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/out/customLauncher.js",
-      "args": [
-        // Mocha Test Explorer will normally pass WorkerArgs here. For manual
-        // debugging we provide an empty JSON object so the launcher can
-        // proceed. Adjust this to simulate different launch scenarios.
-        "{}"
-      ],
-      "env": {
-        // Compile and point to the built runTests script. During debugging
-        // you can change this to point at the TypeScript source if using ts-node.
-        "RUN_TESTS_FILE": "out/runTests.js",
-        "VSCODE_VERSION": "stable"
-      },
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
-      "preLaunchTask": "npm: build",
+      "args": ["{}"],                     // MTE passes WorkerArgs JSON; {} is fine locally
       "cwd": "${workspaceFolder}",
-      "internalConsoleOptions": "openOnSessionStart"
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "env": {
+        "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
+        // Point to a locally installed VS Code so no download is needed:
+        "VSCODE_EXECUTABLE_PATH": "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
+        // Port the Extension Host will listen on so we can attach:
+        "INSPECT_EXTENSIONS_PORT": "9229"
+      },
+      "skipFiles": ["<node_internals>/**"]
     },
     {
-      "name": "Run compiled runTests directly",
+      "name": "2) Attach: VS Code Extension Host",
       "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/out/runTests.js",
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
-      "cwd": "${workspaceFolder}",
-      "internalConsoleOptions": "openOnSessionStart"
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "timeout": 30000,
+      "protocol": "inspector",
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+      ],
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceFolder}/out/**/*.js"
+      ]
     }
   ]
 }

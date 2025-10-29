@@ -72,38 +72,6 @@ const test_electron_1 = require("@vscode/test-electron");
         // arguments if needed. Additional environment variables can be added
         // here to make specific WorkerArgs properties easier to consume.
         process.env.MTE_WORKER_ARGS = JSON.stringify(workerArgs);
-        // Determine the workspace path. VS Code will set VSCODE_WORKSPACE_PATH
-        // when launching the script, but fall back to the cwd if undefined.
-        const workspacePath = process.env.VSCODE_WORKSPACE_PATH || process.cwd();
-        // Determine the runTests script file. This should be a compiled JS file
-        // (CommonJS module) relative to the workspace. Use RUN_TESTS_FILE if
-        // provided, otherwise default to the build output of src/runTests.ts.
-        const runTestsFile = process.env.RUN_TESTS_FILE || 'out/runTests.js';
-        const extensionTestsPath = path.resolve(workspacePath, runTestsFile);
-        // Determine which version of VS Code to run the tests under. Use
-        // VSCODE_VERSION if provided (e.g. "stable" or "insiders"), otherwise
-        // default to "stable".
-        const vscodeVersion = process.env.VSCODE_VERSION || 'stable';
-        // Optional extra launch arguments to VS Code can be provided via
-        // VSCODE_LAUNCH_ARGS. If the variable is defined, parse it as JSON
-        // expecting an array of strings. When undefined or invalid, ignore it.
-        let launchArgs = undefined;
-        if (process.env.VSCODE_LAUNCH_ARGS) {
-            try {
-                const parsed = JSON.parse(process.env.VSCODE_LAUNCH_ARGS);
-                if (Array.isArray(parsed)) {
-                    launchArgs = parsed;
-                }
-            }
-            catch (err) {
-                console.warn('Custom launcher: could not parse VSCODE_LAUNCH_ARGS', err);
-            }
-        }
-        // Compute extensionDevelopmentPath. This is the workspace root which contains
-        // the extension's package.json. When running tests outside of an
-        // extension (for example, plain Mocha tests), setting this to the
-        // workspace still works and VS Code will start with the workspace open.
-        const extensionDevelopmentPath = workspacePath;
         // Pass through any IPC configuration required by Mocha Test Explorer to
         // communicate with the worker process. If the WorkerArgs include
         // network options (role, port, host) they can be placed in the
@@ -120,13 +88,29 @@ const test_electron_1 = require("@vscode/test-electron");
         // Run the tests using VS Code's integration test runner. This will
         // download the specified VS Code version, launch it with the workspace
         // under test and then run the test script specified via extensionTestsPath.
-        await (0, test_electron_1.runTests)({
-            extensionDevelopmentPath,
-            extensionTestsPath,
-            version: vscodeVersion,
+        const runTestsFile = process.env.RUN_TESTS_FILE
+            ? path.resolve(process.env.RUN_TESTS_FILE)
+            : path.resolve(__dirname, 'runTests.js');
+        const vscodeExecutablePath = process.env.VSCODE_EXECUTABLE_PATH;
+        const inspectExtensionsPort = process.env.INSPECT_EXTENSIONS_PORT || '9229';
+        const launchArgs = [
+            // pause the extension host on start so we can attach a debugger:
+            `--inspect-brk-extensions=${inspectExtensionsPort}`,
+        ];
+        // pass through any extra args Mocha Test Explorer gives you (optional):
+        if (Array.isArray(workerArgs === null || workerArgs === void 0 ? void 0 : workerArgs.args))
+            launchArgs.push(...workerArgs.args);
+        const options = {
+            extensionDevelopmentPath: path.resolve(__dirname, '..'),
+            extensionTestsPath: runTestsFile,
+            vscodeExecutablePath, // if undefined, it will try to download (which is what we’re avoiding)
             launchArgs,
-            extensionTestsEnv: ipcEnv,
-        });
+            extensionTestsEnv: {
+                ...process.env, // bring your MTE_* env through
+            },
+        };
+        console.log('[launcher] options:', { vscodeExecutablePath, runTestsFile, launchArgs });
+        await (0, test_electron_1.runTests)(options);
     }
     catch (err) {
         console.error(`Custom launcher failed to run tests: ${util.inspect(err)}`);
