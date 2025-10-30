@@ -6,7 +6,6 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/out/customLauncher.js",
-      "args": ["{}"],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "env": {
@@ -16,6 +15,15 @@
       },
       "skipFiles": ["<node_internals>/**"],
       "trace": true
+    },
+    {
+      "name": "Attach: Launcher",
+      "type": "node",
+      "request": "attach",
+      "address": "127.0.0.1",
+      "port": 9230,
+      "outFiles": ["${workspaceFolder}/out/**/*.js"],
+      "skipFiles": ["<node_internals>/**","**/node_modules/**"]
     },
     {
   "name": "2) Attach: VS Code Extension Host",

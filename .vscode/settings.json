@@ -8,13 +8,17 @@
     "tsconfig-paths/register",
     "source-map-support/register"
   ],
-  "mochaExplorer.debuggerConfig": "Debug: Launcher + Extension Host",
-  "mochaExplorer.env": {
-    "VSCODE_VERSION": "stable",
-    "ELECTRON_RUN_AS_NODE": null
+  
+  // "mochaExplorer.debuggerConfig": "Debug: Launcher + Extension Host",
+   "mochaExplorer.env": {
+    "MTE_STOP_AFTER_HANDSHAKE": "1",              // programmatic inspector.open()
+    "MTE_DEBUG_LAUNCHER_PORT": "9231",
+    "INSPECT_EXTENSIONS_PORT": "9229",
+    "VSCODE_VERSION": "stable"             
   },
   "mochaExplorer.ipcRole": "server",
   "mochaExplorer.autoload": false,
+  "mochaExplorer.pruneFiles": true, 
 
   "mochaExplorer.debuggerPort": 9229,
   "mochaExplorer.ipcTimeout": 10000,
