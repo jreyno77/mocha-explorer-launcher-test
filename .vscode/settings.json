@@ -2,16 +2,19 @@
   "mochaExplorer.launcherScript": "./out/customLauncher.js",
   "mochaExplorer.files": "out/test/**/*.js",
   "mochaExplorer.ui": "tdd",
-
-  // extension listens; launcher connects
-  "mochaExplorer.ipcRole": "client",
-
   "mochaExplorer.autoload": false,
   "mochaExplorer.logpanel": true,
 
-  // <<< this is what pauses BEFORE argv[2] so you can attach
+  // Let the adapter (extension) listen, worker connects as "client"
+  "mochaExplorer.ipcRole": "server",
+  "mochaExplorer.ipcTimeout": 6000,
+
+  // Env that will be forwarded by the launcher (see extensionTestsEnv above)
   "mochaExplorer.env": {
-    "MTE_DEBUG_LAUNCHER": "1",
-    "MTE_DEBUG_LAUNCHER_PORT": "9231",
-  },
+    "VSCODE_VERSION": "stable",
+    "VSCODE_WORKSPACE_PATH": "${workspaceFolder}",
+    "MTE_DEBUG_WORKER": "1",
+    "MTE_DEBUG_WORKER_PORT": "9240",
+    "MTE_IPC_TIMEOUT": "6000"
+  }
 }
