@@ -1,6 +1,17 @@
 {
-  "mochaExplorer.launcherScript": "out/customLauncher.js",
+  "mochaExplorer.launcherScript": "./out/customLauncher.js",
+  "mochaExplorer.files": "out/test/**/*.js",
+  "mochaExplorer.ui": "tdd",
+
+  // extension listens; launcher connects
+  "mochaExplorer.ipcRole": "client",
+
   "mochaExplorer.autoload": false,
-  "mochaExplorer.ipcTimeout": 60000,
-  "mochaExplorer.logpanel": true
+  "mochaExplorer.logpanel": true,
+
+  // <<< this is what pauses BEFORE argv[2] so you can attach
+  "mochaExplorer.env": {
+    "MTE_DEBUG_LAUNCHER": "1",
+    "MTE_DEBUG_LAUNCHER_PORT": "9231",
+  },
 }

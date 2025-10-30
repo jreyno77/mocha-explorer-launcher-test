@@ -2,13 +2,93 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach: Launcher (after handshake)",
+      "name": "1) Debug Custom Launcher",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/customLauncher.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["{\"role\":\"server\",\"port\":9449,\"host\":\"localhost\"}"],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "env": {
+        "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
+        "VSCODE_EXECUTABLE_PATH": "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
+        "INSPECT_EXTENSIONS_PORT": "9229"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "trace": true
+    },
+    {
+  "name": "Attach to Worker (runMochaWorker)",
+  "type": "node",
+  "request": "attach",
+  "address": "127.0.0.1",
+  "port": 9240,
+  "restart": true,
+  "outFiles": ["${workspaceFolder}/out/**/*.js"],
+  "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
+  "skipFiles": ["<node_internals>/**"]
+},
+{
+  "name": "Attach Extension Host (break on start)",
+  "type": "node",
+  "request": "attach",
+  "address": "127.0.0.1",
+  "port": 9229,
+  "restart": true,
+  "outFiles": ["${workspaceFolder}/out/**/*.js"]
+},
+    {
+      "name": "Attach: Launcher (port 9231)",
       "type": "node",
       "request": "attach",
       "address": "127.0.0.1",
       "port": 9231,
-      "skipFiles": ["<node_internals>/**","**/node_modules/**"],
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
       "outFiles": ["${workspaceFolder}/out/**/*.js"]
-    }
-  ]
+    },
+    {
+  "name": "2) Attach: VS Code Extension Host",
+  "request": "attach",
+  "address": "127.0.0.1",
+  "port": 9229,
+  "timeout": 30000,
+  "restart": true,
+  "type": "node",
+  "sourceMaps": true,
+  "outFiles": ["${workspaceFolder}/out/**/*.js"],
+  "resolveSourceMapLocations": [
+    "${workspaceFolder}/**",
+    "!**/node_modules/**"
+  ],
+  "sourceMapPathOverrides": {
+    "*": "*",
+    "${workspaceFolder}/out/*": "${workspaceFolder}/out/*",
+    "${workspaceFolder}/src/*": "${workspaceFolder}/src/*"
+  },
+  "skipFiles": [
+    "<node_internals>/**",
+    "**/node_modules/**"
+  ],
+  "trace": true
+}
+
+  ],
+  "compounds": [
+  {
+    "name": "Debug: Launcher + Extension Host",
+    "configurations": [
+      "1) Debug Custom Launcher",
+      "2) Attach: VS Code Extension Host"
+    ],
+    "stopAll": true
+  },
+  {
+    "name": "Debug: worker and launcher",
+    "configurations": [
+      "1) Debug Custom Launcher",
+      "Attach to Worker (runMochaWorker)"
+    ],
+    "stopAll": true
+  }
+]
 }
