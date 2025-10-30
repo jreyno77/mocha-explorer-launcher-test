@@ -1,14 +1,21 @@
 {
   "mochaExplorer.launcherScript": "out/customLauncher.js",
   "mochaExplorer.files": "out/test/**/*.js",
-  "mochaExplorer.watch": "out/**/*.js",
-  "mochaExplorer.env": {
-    "RUN_TESTS_FILE": "out/runTests.js",
-    "VSCODE_VERSION": "stable",
-    "VSCODE_EXECUTABLE_PATH": "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
-    "INSPECT_EXTENSIONS_PORT": "9229"
-  },
   "mochaExplorer.logpanel": true,
+  "mochaExplorer.ui": "tdd",
+  "mochaExplorer.require": [
+    "ts-node/register",
+    "tsconfig-paths/register",
+    "source-map-support/register"
+  ],
+  "mochaExplorer.debuggerConfig": "Debug: Launcher + Extension Host",
+  "mochaExplorer.env": {
+    "VSCODE_VERSION": "stable",
+    "ELECTRON_RUN_AS_NODE": null
+  },
+  "mochaExplorer.ipcRole": "server",
   "mochaExplorer.autoload": false,
-  "mochaExplorer.ipcRole": "server"
+
+  "mochaExplorer.debuggerPort": 9229,
+  "mochaExplorer.ipcTimeout": 10000,
 }

@@ -31,22 +31,18 @@ import { runTests } from '@vscode/test-electron';
       : runTestsFile;
 
     // Require a local VS Code binary (we set it via mochaExplorer.env)
-    const vscodeExecutablePath = process.env.VSCODE_EXECUTABLE_PATH;
-    if (!vscodeExecutablePath || !fs.existsSync(vscodeExecutablePath)) {
-      console.error('[launcher] VSCODE_EXECUTABLE_PATH is not set or invalid.');
-      process.exit(2);
-    }
+    // const vscodeExecutablePath = process.env.VSCODE_EXECUTABLE_PATH;
+    // if (!vscodeExecutablePath || !fs.existsSync(vscodeExecutablePath)) {
+    //   console.error('[launcher] VSCODE_EXECUTABLE_PATH is not set or invalid.');
+    //   process.exit(2);
+    // }
 
-    // Only pause EH when you’re not in an MTE run
-    const launchArgs = isMochaExplorerRun ? [] : [
-      `--inspect-brk-extensions=${process.env.INSPECT_EXTENSIONS_PORT || '9229'}`
-    ];
+    const launchArgs = []
     if (Array.isArray(workerArgs?.args)) launchArgs.push(...workerArgs.args);
 
     await runTests({
       extensionDevelopmentPath: path.resolve(__dirname, '..'),
       extensionTestsPath,
-      vscodeExecutablePath,
       launchArgs,
       extensionTestsEnv: { ...process.env, ...ipcEnv }
     });

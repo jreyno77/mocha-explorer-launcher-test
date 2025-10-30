@@ -6,14 +6,12 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/out/customLauncher.js",
-      "args": ["{}"],                     // MTE passes WorkerArgs JSON; {} is fine locally
+      "args": ["{}"],
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "tsc: build - tsconfig.json",
       "env": {
         "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
-        // Point to a locally installed VS Code so no download is needed:
         "VSCODE_EXECUTABLE_PATH": "/Applications/Visual Studio Code.app/Contents/MacOS/Electron",
-        // Port the Extension Host will listen on so we can attach:
         "INSPECT_EXTENSIONS_PORT": "9229"
       },
       "skipFiles": ["<node_internals>/**"],
@@ -21,14 +19,12 @@
     },
     {
   "name": "2) Attach: VS Code Extension Host",
-  "type": "pwa-node",
   "request": "attach",
   "address": "127.0.0.1",
-  "port": 9229,                      // must match INSPECT_EXTENSIONS_PORT
-  "protocol": "inspector",
+  "port": 9229,
   "timeout": 30000,
   "restart": true,
-
+  "type": "node",
   "sourceMaps": true,
   "outFiles": ["${workspaceFolder}/out/**/*.js"],
   "resolveSourceMapLocations": [

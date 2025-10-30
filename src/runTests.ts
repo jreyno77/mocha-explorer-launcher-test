@@ -14,7 +14,7 @@ import 'source-map-support/register';
 export function run(): Promise<void> {
   // Create the Mocha test instance with BDD interface.
   const mocha = new Mocha({
-    ui: 'bdd',
+    ui: 'tdd',
     color: true,
     timeout: process.env.INSPECT_EXTENSIONS_PORT ? 0 : 30000, // no timeouts while debugging
   });
