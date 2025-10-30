@@ -1,25 +1,6 @@
 {
   "mochaExplorer.launcherScript": "out/customLauncher.js",
-  "mochaExplorer.files": "out/test/**/*.js",
-  "mochaExplorer.logpanel": true,
-  "mochaExplorer.ui": "tdd",
-  "mochaExplorer.require": [
-    "ts-node/register",
-    "tsconfig-paths/register",
-    "source-map-support/register"
-  ],
-  
-  // "mochaExplorer.debuggerConfig": "Debug: Launcher + Extension Host",
-   "mochaExplorer.env": {
-    "MTE_STOP_AFTER_HANDSHAKE": "1",              // programmatic inspector.open()
-    "MTE_DEBUG_LAUNCHER_PORT": "9231",
-    "INSPECT_EXTENSIONS_PORT": "9229",
-    "VSCODE_VERSION": "stable"             
-  },
-  "mochaExplorer.ipcRole": "server",
   "mochaExplorer.autoload": false,
-  "mochaExplorer.pruneFiles": true, 
-
-  "mochaExplorer.debuggerPort": 9229,
-  "mochaExplorer.ipcTimeout": 10000,
+  "mochaExplorer.ipcTimeout": 60000,
+  "mochaExplorer.logpanel": true
 }
