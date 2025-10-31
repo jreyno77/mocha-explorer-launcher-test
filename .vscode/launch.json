@@ -2,16 +2,40 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach to Worker (runMochaWorker)",
-      "type": "pwa-node",
-      "request": "attach",
-      "address": "127.0.0.1",
-      "port": 9240,
-      "restart": true,
-      "continueOnAttach": true,
-      "outFiles": ["${workspaceFolder}/out/**/*.js"],
-      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
-      "skipFiles": ["<node_internals>/**"]
-    }
-  ]
+      "name": "1) Debug Custom Launcher",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/customLauncher.js",
+      "cwd": "${workspaceFolder}",
+      "args": ["{\"role\":\"server\",\"port\":9449,\"host\":\"localhost\"}"],
+      "preLaunchTask": "npm: build",
+      "env": {
+        "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
+        "EH_DEBUG_PORT": "9229",
+        "VSCODE_VERSION": "insiders",
+        "VSCODE_WORKSPACE_PATH": "${workspaceFolder}"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "trace": true
+    },
+{
+  "name": "2) Attach: VS Code Extension Host",
+  "type": "node",
+  "request": "attach",
+  "address": "127.0.0.1",
+  "port": 9229,
+  "restart": true,
+  "autoAttachChildProcesses": true
+}
+], "compounds": [
+  {
+    "name": "Debug: worker and launcher",
+    "configurations": [
+      "1) Debug Custom Launcher",
+      "2) Attach: VS Code Extension Host"
+    ],
+    "stopAll": true
+  }
+]
+
 }

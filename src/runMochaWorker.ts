@@ -1,5 +1,8 @@
-// out/runMochaWorker.ts
+debugger
 import inspector from 'node:inspector';
+if (process.env.MTE_DEBUG_WORKER === '1') {
+  inspector.open(Number(process.env.MTE_DEBUG_WORKER_PORT ?? 9240), '127.0.0.1', true);
+}
 import * as path from 'path';
 import glob from 'glob';
 import Mocha from 'mocha';

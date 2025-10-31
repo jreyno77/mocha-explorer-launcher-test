@@ -6,12 +6,12 @@
   "mochaExplorer.logpanel": true,
 
   // Let the adapter (extension) listen, worker connects as "client"
-  "mochaExplorer.ipcRole": "server",
+  "mochaExplorer.ipcRole": "client",
   "mochaExplorer.ipcTimeout": 6000,
 
   // Env that will be forwarded by the launcher (see extensionTestsEnv above)
   "mochaExplorer.env": {
-    "VSCODE_VERSION": "stable",
+    "VSCODE_VERSION": "insiders",
     "VSCODE_WORKSPACE_PATH": "${workspaceFolder}",
     "MTE_DEBUG_WORKER": "1",
     "MTE_DEBUG_WORKER_PORT": "9240",
