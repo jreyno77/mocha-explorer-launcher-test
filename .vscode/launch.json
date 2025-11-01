@@ -9,30 +9,25 @@
       "cwd": "${workspaceFolder}",
       "args": ["{\"role\":\"server\",\"port\":9449,\"host\":\"localhost\"}"],
       "preLaunchTask": "npm: build",
-      "env": {
-        "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
-        "EH_DEBUG_PORT": "9229",
-        "VSCODE_VERSION": "insiders",
-        "VSCODE_WORKSPACE_PATH": "${workspaceFolder}"
-      },
       "skipFiles": ["<node_internals>/**"],
       "trace": true
     },
-{
-  "name": "2) Attach: VS Code Extension Host",
-  "type": "node",
-  "request": "attach",
-  "address": "127.0.0.1",
-  "port": 9229,
-  "restart": true,
-  "autoAttachChildProcesses": true
-}
+    {
+      "name": "2) Debug VsCode Testing after Launch break",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "autoAttachChildProcesses": true,
+      "continueOnAttach": true,
+      "trace": true,
+      "preLaunchTask": "wait-for-9229"
+    }
 ], "compounds": [
   {
-    "name": "Debug: worker and launcher",
+    "name": "Debug: Launcher + Extension Host",
     "configurations": [
       "1) Debug Custom Launcher",
-      "2) Attach: VS Code Extension Host"
+      "2) Debug VsCode Testing after Launch break"
     ],
     "stopAll": true
   }

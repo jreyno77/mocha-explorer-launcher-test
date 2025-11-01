@@ -1,19 +1,7 @@
 debugger
-import inspector from 'node:inspector';
-if (process.env.MTE_DEBUG_WORKER === '1') {
-  inspector.open(Number(process.env.MTE_DEBUG_WORKER_PORT ?? 9240), '127.0.0.1', true);
-}
 import * as path from 'path';
 import glob from 'glob';
 import Mocha from 'mocha';
-import { createConnection, receiveConnection, readMessages } from 'vscode-test-adapter-remoting-util';
-
-// ---- Pause here until a debugger attaches (only when enabled) ----
-if (process.env.MTE_DEBUG_WORKER === '1') {
-  const port = Number(process.env.MTE_DEBUG_WORKER_PORT ?? 9240);
-  inspector.open(port, '127.0.0.1', true); // wait=true => blocks until attach
-}
-// ------------------------------------------------------------------
 
 type WorkerArgs = {
   action: 'load' | 'run' | 'loadTests' | 'runTests';
@@ -23,53 +11,64 @@ type WorkerArgs = {
   env?: Record<string, string | null | undefined>;
 };
 
-function expand(globs: string | string[]) {
-  const list = Array.isArray(globs) ? globs : [globs];
-  const files = new Set<string>();
-  for (const g of list) glob.sync(g, { nodir: true }).forEach(f => files.add(path.resolve(f)));
-  return [...files];
-}
+/*
 
-(async () => {
-  // Connect to the adapter (extension) and read the first message = WorkerArgs
-  const role = (process.env.MOCHA_WORKER_IPC_ROLE ?? 'client') as 'client' | 'server';
-  const port = Number(process.env.MOCHA_WORKER_IPC_PORT ?? 9449);
-  const hostRaw = process.env.MOCHA_WORKER_IPC_HOST ?? 'localhost';
-  const host = hostRaw === 'localhost' ? '127.0.0.1' : hostRaw;
-  const timeoutMs = Number(process.env.MTE_IPC_TIMEOUT ?? 60000);
-  const retryInterval = Number(process.env.MTE_RETRY_INTERVAL ?? 200);
+process.on('message', async (args) => {
+  if (args.action === 'load') {
+    send({ type: 'started' });                                  // TestLoadStartedEvent
+    const suiteTree = await buildSuiteTreeWithMocha(args.opts); // -> TestSuiteInfo
+    send({ type: 'finished', suite: suiteTree });               // TestLoadFinishedEvent
+  } else if (args.action === 'run') {
+    send({ type: 'started', tests: args.tests });               // TestRunStartedEvent
+    await runWithMocha(args.tests, (evt) => send(evt));         // TestSuiteEvent/TestEvent
+    send({ type: 'finished' });                                  // TestRunFinishedEvent
+  }
+});
+*/
 
-  const socket = role === 'client'
-    ? await createConnection(port, { host, timeout: timeoutMs, retryInterval })
-    : await receiveConnection(port, { timeout: timeoutMs });
+/**
+ * This function is the entry point for the VS Code integration test runner.
+ * It will be executed inside the Extension Host after VS Code has started.
+ *
+ * The default implementation looks for test files under `out/test` and
+ * executes them using Mocha. If you wish to customize the test location or
+ * behaviour, update the `testsRoot` or Mocha options accordingly.
+ */
+export function run(): Promise<void> {
+  // Create the Mocha test instance with BDD interface.
+  const mocha = new Mocha({
+    ui: 'tdd',
+    color: true,
+    timeout: process.env.INSPECT_EXTENSIONS_PORT ? 0 : 30000, // no timeouts while debugging
+  });
 
-  const workerArgs = await new Promise<WorkerArgs>((resolve, reject) => {
-    const onErr = (e: Error) => reject(e);
-    socket.on('error', onErr);
-    readMessages(socket, (msg: unknown) => {
-      socket.off('error', onErr);
-      resolve(msg as WorkerArgs); // first message from adapter
+  // Determine the location of compiled tests. By default we assume that
+  // tests live under `out/test` (compiled from `src/test`). If you relocate
+  // your tests, adjust this path accordingly. The path is resolved relative
+  // to this file's directory.
+  const testsRoot = path.resolve(__dirname, 'test');
+
+  return new Promise((resolve, reject) => {
+    glob('**/*.test.js', { cwd: testsRoot }, (err, files) => {
+      if (err) return reject(err);
+      // Load each discovered test file into Mocha
+      console.log('[runTests] loading test files:', files);
+      files.forEach((file) => mocha.addFile(path.resolve(testsRoot, file)));
+      try {
+        // Run the tests. resolve or reject the promise based on failures
+        const runner = mocha.run(failures => {
+          if (failures > 0) {
+            reject(new Error(`${failures} test(s) failed.`));
+          } else {
+            resolve();
+          }
+        });
+        runner.on('fail', (test, error) => {
+          console.error('[runTests] FAIL:', test.fullTitle(), error);
+        });
+      } catch (err) {
+        reject(err);
+      }
     });
   });
-
-  // Apply any env the adapter sends
-  if (workerArgs.env) {
-    for (const [k, v] of Object.entries(workerArgs.env)) {
-      if (v == null) delete (process.env as any)[k];
-      else process.env[k] = v;
-    }
-  }
-
-  const mocha = new Mocha(workerArgs.mochaOptions ?? {});
-  const files = expand(workerArgs.files ?? 'out/test/**/*.js');
-  files.forEach(f => mocha.addFile(f));
-
-  if (workerArgs.action === 'load' || workerArgs.action === 'loadTests') {
-    files.forEach(require); // let adapter discover
-    return;
-  }
-
-  await new Promise<void>((resolve, reject) => {
-    try { mocha.run(() => resolve()); } catch (e) { reject(e); }
-  });
-})();
+}

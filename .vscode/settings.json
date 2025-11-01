@@ -4,17 +4,16 @@
   "mochaExplorer.ui": "tdd",
   "mochaExplorer.autoload": false,
   "mochaExplorer.logpanel": true,
-
+  "mochaExplorer.debuggerConfig": "Debug: Launcher + Extension Host",
   // Let the adapter (extension) listen, worker connects as "client"
   "mochaExplorer.ipcRole": "client",
   "mochaExplorer.ipcTimeout": 6000,
 
   // Env that will be forwarded by the launcher (see extensionTestsEnv above)
   "mochaExplorer.env": {
-    "VSCODE_VERSION": "insiders",
-    "VSCODE_WORKSPACE_PATH": "${workspaceFolder}",
-    "MTE_DEBUG_WORKER": "1",
-    "MTE_DEBUG_WORKER_PORT": "9240",
-    "MTE_IPC_TIMEOUT": "6000"
+        "EXT_HOST_DEBUG_PORT": "9229",
+        "VSCODE_VERSION": "insiders",
+        "RUN_TESTS_FILE": "${workspaceFolder}/out/runTests.js",
+        "VSCODE_WORKSPACE_PATH": "${workspaceFolder}",
   }
 }
